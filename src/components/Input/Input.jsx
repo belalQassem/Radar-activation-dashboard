@@ -1,16 +1,12 @@
 import React from 'react'
-import {StyledDiv,StyledInput,Styledlabel } from './style'
+import { InputWrapper } from './style'
 
-
-const Input = ({ClassName,Type,Text,Label,Id,Placeholder}) => {
+const Input = ({ClassName,Type,Text,Label,Id,Placeholder,Value,OnChange}) => {
   return (
-    <StyledDiv>
-      
-        <Styledlabel htmlFor={Label}>{Text}</Styledlabel>
-        <StyledInput id={Id} className={ClassName} type={Type} placeholder={Placeholder}/>
-  
-    </StyledDiv>
+    <InputWrapper>
+      <label htmlFor={Label}>{Text}</label>
+      <input id={Id} className={ClassName} type={Type} placeholder={Placeholder} value={Value} onChange={OnChange}></input>
+    </InputWrapper>
   )
 }
-
-export default Input
+export default Input;

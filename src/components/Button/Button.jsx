@@ -3,9 +3,9 @@ import { StyledButton,StyledDiv } from './style'
 
 const Button = ({Text,Type}) => {
   return (
-    <StyledDiv>
+    <div>
         <StyledButton type={Type}>{Text}</StyledButton>
-    </StyledDiv>
+    </div>
   )
 }
 export default Button

@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+
 const useAuth = (url) => {
   const searchedValues = JSON.parse(localStorage.getItem("searchValues")) || [];
   const token = localStorage.getItem("token");
@@ -9,15 +10,16 @@ const useAuth = (url) => {
   const [Errors, setErrors] = useState([]);
   const [Token, setToken] = useState("");
   const [username, setusername] = useState("");
+  const [password, setpassword] = useState("");
   const [searchValue, setSearchValue] = useState(searchedValues);
-
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("name");
     setToken("");
-    setusername("");
     setisAuthorized(false);
+    
   };
+  // 
 
   return {
     isAuthorized,
@@ -33,6 +35,8 @@ const useAuth = (url) => {
     logout,
     searchValue,
     setSearchValue,
+    password,
+    setpassword,
   };
 };
 
