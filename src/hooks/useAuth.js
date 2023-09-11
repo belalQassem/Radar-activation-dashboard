@@ -11,6 +11,7 @@ const useAuth = (url) => {
   const [Token, setToken] = useState("");
   const [username, setusername] = useState("");
   const [password, setpassword] = useState("");
+  const [qrCode , setQrCode] = useState(null);
   const [searchValue, setSearchValue] = useState(searchedValues);
   const logout = () => {
     localStorage.removeItem("token");
@@ -37,6 +38,8 @@ const useAuth = (url) => {
     setSearchValue,
     password,
     setpassword,
+    qrCode,
+    setQrCode
   };
 };
 
