@@ -1,4 +1,4 @@
-// search input component to serch of users by name or email or user id or password 
+
 import React from "react";
 import { StyledInput } from "./style";
 import { FaSearch } from "react-icons/fa";
