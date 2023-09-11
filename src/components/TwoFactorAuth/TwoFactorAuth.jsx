@@ -30,7 +30,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const TwoFactorAuth = () => {
-  const { setisAuthorized,qrCode,Token,setToken} = useAuthContext();
+  const { setisAuthorized,qrCode,setToken} = useAuthContext();
   const [passwordType, setPasswordType] = useState("password");
   const [passwordShow, setPasswordShow] = useState(true);
   const [new_password, setNew_password] = useState("");
