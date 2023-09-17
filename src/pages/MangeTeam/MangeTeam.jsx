@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Box, Button, useTheme } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
+// import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import NavBar from "../../components/NavBar/NavBar";
 import { StyledDiv } from "../CreateUser/style";
 import Content from "../../components/ContentPage/Content";
@@ -119,7 +119,7 @@ const ManageTeam = () => {
             sx={{ display:"flex" ,justifyContent:"space-between", alignItems:"center"  }}
           >
             <NavBar title="TEAM" subtitle="Managing the Team Members" />
-            <Button
+            {/* <Button
               sx={{
                 backgroundColor: colors.blueAccent[700],
                 color: colors.grey[100],
@@ -130,7 +130,7 @@ const ManageTeam = () => {
             >
               <DownloadOutlinedIcon sx={{ mr: "10px" }} />
               Download Reports
-            </Button>
+            </Button> */}
           </Box>
           <Box
             sx={{
