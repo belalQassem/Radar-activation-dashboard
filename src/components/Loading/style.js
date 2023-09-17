@@ -6,6 +6,7 @@ export const LoadingStyled = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
+  width : 100%;
   .loading-spinner {
     width: 50px;
     height: 50px;
