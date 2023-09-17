@@ -10,6 +10,7 @@ import {
 } from "./style";
 
 import {useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 
@@ -82,6 +83,7 @@ const Login = () => {
         setErrors([]);
         setIsLoading(false);
         setisAuthorized(true);
+        toast.success("Login Successfully");
         navigate('/dashboard')
       }
       else {
@@ -89,26 +91,26 @@ const Login = () => {
         setIsLoading(false);
       }
     } catch (error) {
+      toast.error(error.response.data.data.message);
       if (error.response.data.data.status === 428) {
         setQrCode(error.response.data.data.qrCodeDataURL);
         setToken(error.response.data.data.token);
         setIsLoading(false);
         localStorage.setItem("token",error.response.data.data.token);
         localStorage.setItem("qrCode",error.response.data.data.qrCodeDataURL);
+        toast.error("Please scan QR code");
         navigate('/TwoFactorAuth')
       }
       else if (error.response.data.data.message === 'Some thing error') {
+        toast.error("Please enter OTP");
         setIsLoading(false);
         setValid(true);
       }
       else if (error) {
-        const validationErrors = error.inner.reduce((acc, err) => {
-          acc[err.path] = err.message;
-          return acc;
-        }, {});
-        setErrors(validationErrors);
+        toast.error(error);
         setIsLoading(false);
       } else {
+        toast.error(error.message);
         setErrors({ login: error.message });
         setIsLoading(false);
       }
@@ -127,7 +129,7 @@ const Login = () => {
                 type="email"
                 id="email"
                 placeholder="email"
-                autoComplete="off"
+                autoComplete="on"
                 onChange={handleChangeInput}
                 value={email}
               />
@@ -142,7 +144,7 @@ const Login = () => {
                 onChange={handleChangeInput}
                 value={password}
                 placeholder="password"
-                autoComplete="off"
+                autoComplete="on"
               />
               {passwordShow ? (
                 <ICONShow onClick={handlePasswordShow} />
@@ -161,7 +163,7 @@ const Login = () => {
                   placeholder="otp"
                   onChange={handleChangeInput}
                   value={otp}
-                  autoComplete="off"
+                  autoComplete="on"
                 />
               </Field>
             )}
