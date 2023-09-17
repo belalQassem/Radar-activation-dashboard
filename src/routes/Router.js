@@ -8,6 +8,7 @@ import LazyActiveMotherboards from "../pages/Motherboards/Active";
 import LazypendingdKeys from "../pages/Motherboards/Inactive";
 import LazyMangeTeam from "../pages/MangeTeam/MangeTeam";
 import LazyCreateUser from "../pages/CreateUser/CreateUser";
+import LazyStatistics from "../pages/Dashboard/Dashboard";
 
 const RedirectToLogin = () => {
   return <Navigate to="/Login" />;
@@ -20,22 +21,18 @@ const ProtectedRoute = ({ isAuthorized, children }) =>  {
 const Router = ({ isAuthorized }) => {
   return (
     <Routes>
-      <Route index element={<RedirectToLogin />} />
+      <Route index element={<RedirectToLogin/>} />
       <Route path="/login" element={isAuthorized ? <Navigate to="/dashboard" />: <LazyLogin/>}/>
-      <Route path="/towFactorAuthintication" element={isAuthorized ? <Navigate to="/dashboard" />: <LazyTOwFactorAuthintication/>}/>
+      <Route path="/TwoFactorAuth" element={isAuthorized ? <Navigate to="/dashboard" />: <LazyTOwFactorAuthintication/>}/>
       <Route
         path="/dashboard"
-        element={
-          <ProtectedRoute isAuthorized={isAuthorized}>
-            <LazyDashboard />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="Motherboards" element={isAuthorized ? <LazyMotherboards />:<RedirectToLogin /> } />
-        <Route path="Motherboards/Active" element={isAuthorized ? <LazyActiveMotherboards />:<RedirectToLogin />} />
-        <Route path="Motherboards/InActive" element={isAuthorized ? <LazypendingdKeys />: <RedirectToLogin /> } />
-        <Route path="data/usermangment" element={isAuthorized ? <LazyMangeTeam /> :<RedirectToLogin /> } />
-        <Route path="data/create" element={isAuthorized ? <LazyCreateUser />:<RedirectToLogin />} />
+        element={<ProtectedRoute isAuthorized={isAuthorized}><LazyDashboard/></ProtectedRoute>}>
+      <Route path="/dashboard/statistics" element={isAuthorized ? <LazyStatistics/>:<RedirectToLogin />} />
+      <Route path="Motherboards" element={isAuthorized ? <LazyMotherboards />:<RedirectToLogin /> } />
+      <Route path="Motherboards/Active" element={isAuthorized ? <LazyActiveMotherboards />:<RedirectToLogin />} />
+      <Route path="Motherboards/InActive" element={isAuthorized ? <LazypendingdKeys />: <RedirectToLogin /> } />
+      <Route path="data/usermangment" element={isAuthorized ? <LazyMangeTeam /> :<RedirectToLogin /> } />
+      <Route path="data/create" element={isAuthorized ? <LazyCreateUser />:<RedirectToLogin />} />
       </Route>
     </Routes>
   );

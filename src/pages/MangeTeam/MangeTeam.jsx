@@ -9,8 +9,9 @@ import Content from "../../components/ContentPage/Content";
 import ModalComponent from '../../components/Modal/Modal';
 import { tokens } from "../../utils/theme";
 import {UpdateIcon,DeleteIcon} from './style'
-import { updateUser,deleteUser } from "../../services/Api";
+import { updateUser,deleteUser, resend } from "../../services/Api";
 import { toast } from "react-toastify";
+import { useCallback } from "react";
 
 
 const ManageTeam = () => {
@@ -23,7 +24,7 @@ const ManageTeam = () => {
   const colors = tokens(theme.palette.mode);
 
   
-  const fetchUsers = async (token, setUsers) => {
+  const fetchUsers = useCallback( async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/`, {
         headers: {
@@ -35,12 +36,23 @@ const ManageTeam = () => {
       }
     } catch (error) {
       console.error("Error fetching users:", error);
+      toast.error(error.message);
+    }
+  },[token]);
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+  const resendpassword = async (uid) => {
+    try {
+      const response = await resend(uid,token);
+      if (response.data.status === 200) {
+        toast.success(response.data.message);
+      }
+    }catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error(error.response.data.message);
     }
   };
-  useEffect(() => {
-    fetchUsers(token, setUsers);
-  }, [token]);
-    
     const handleExpand = (userUid) => {
       const selected = users.find((user) => user.uid === userUid);
       setSelectedUser(selected);
@@ -61,10 +73,13 @@ const ManageTeam = () => {
     { field: "fullname", headerName: "Full Name", flex: 1,cellClassName: "name-column--cell" },
     { field: "email", headerName: "Email", flex: 1,cellClassName: "name-column--cell" },
     { field: "role", headerName: "Role", flex: 1,cellClassName: "name-column--cell" },
+    { field: "verified", headerName: "Verified", flex: 1,cellClassName: "name-column--cell" },
+    { field: "resend-email", headerName: "Resend-email", flex: 1,cellClassName: "password-column--cell",renderCell: (params) => (
+      <span style={{ color:colors.greenAccent[500],cursor:"pointer" }} onClick={() => resendpassword(params.row.uid,token)}>Resend</span>)},
     { field: "action", headerName: "Action", flex: 1 , renderCell: (params) => (
       <div>
-        <UpdateIcon style={{ color:"#8e8e8e" }} onClick={() => handleExpand(params.row.uid)} />
-        <DeleteIcon style={{ color:"#8e8e8e" }} onClick={() => handleDeleteClick(params.row.uid)} />
+        <UpdateIcon style={{ color:colors.greenAccent[500] }} onClick={() => handleExpand(params.row.uid)} />
+        <DeleteIcon style={{ color:colors.redAccent[500] }} onClick={() => handleDeleteClick(params.row.uid)} />
       </div>
     ), },
   ];
@@ -153,6 +168,7 @@ const ManageTeam = () => {
               rows={users}
               columns={columns}
               getRowId={(row) => row.uid}
+              disableRowSelectionOnClick
               initialState={{
                 ...users.initialState,
                 pagination: { paginationModel: { pageSize: 10 } },

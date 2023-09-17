@@ -4,25 +4,74 @@ import { StyledDiv } from "./style"
 import axios from "axios";
 
 
-import { Box, Button,TextField,useTheme } from "@mui/material";
-import { DataGrid,GridToolbar } from "@mui/x-data-grid";
+import { Box,Stack,useTheme } from "@mui/material";
+import { DataGrid,GridPagination,GridToolbar } from "@mui/x-data-grid";
+import MuiPagination from '@mui/material/Pagination';
 import { tokens } from "../../utils/theme";
 import NavBar from "../../components/NavBar/NavBar";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
+import styled from "styled-components";
+const StyledPagination = styled(MuiPagination)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  height: 40px;
+  
 
+  .MuiPagination-ul {
+    list-style: none;
+    padding-top:20px; 
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+   
+    
+  }
+
+
+  .MuiPaginationItem-root {
+    margin: 0 5px;
+    font-size: 16px;
+   
+    color: #000000;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+
+    &.Mui-selected {
+      background-color: #007bff;
+      color: #ffffff;
+      border: 1px solid #007bff;
+    }
+  }
+`;
 const Active = () => {
-  const [users, setUsers] = useState([]);
+  const [radars, setRadars] = useState([]);
   const [queryParameters, setQueryParameters] = useState({
     filter: "active",
     page: 1,
-    limit: 10,
+    limit: 25,
   });
 
-  const [Page, setPageValue] = useState(queryParameters.page);
+  const [totalPages,setTotalPage] = useState(0);
+  const [totalCount,setTotalCount] = useState(0);
   const token = localStorage.getItem("token");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  
+  const handlePageChange = (event, newPage) => {
+    setQueryParameters({
+      ...queryParameters,
+      page:newPage,
+    });
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -33,7 +82,9 @@ const Active = () => {
           },
         });
         if (response.data.data.status === 200) {
-        setUsers(response.data.data.motherboards);
+        setRadars(response.data.data.motherboards);
+        setTotalPage(response.data.data.totalPages);
+        setTotalCount(response.data.data.totalCount);
       }else{
         
         toast.error(response.data.data.message);
@@ -44,14 +95,20 @@ const Active = () => {
       }
     };
     fetchUsers();
-  }, [queryParameters,token]);
+  }, [queryParameters.filter,queryParameters.page,queryParameters.limit,token]);
   
-  const applyPage = () => {
-    setQueryParameters({
-      ...queryParameters,
-      page: Page
-    });
-  };
+  function CustomPagination() {
+    return <GridPagination ActionsComponent={() => (
+      <Stack spacing={2}>
+        <StyledPagination
+          variant="outlined"
+          count={totalPages}
+          page={queryParameters.page+0}
+          onChange={handlePageChange}
+        />
+      </Stack>
+    )} />;
+  }
   const columns = useMemo( () => [
     { field: "id", headerName: "ID",flex: 1, cellClassName: "name-column--cell" },
       { field: "key", headerName: "key", flex: 1, cellClassName: "name-column--cell" },
@@ -100,7 +157,11 @@ const Active = () => {
         field: "approved_time",
         headerName: "Approved time",
         flex: 1,
-        cellClassName: "name-column--cell"
+        cellClassName: "name-column--cell",
+        type: "date",
+        valueFormatter: (params) => {
+          return params.value ? dayjs(params.value).format("DD/MM/YYYY  HH:mm:ss") : "";
+        }
       },
   ]
   ,[]);
@@ -112,41 +173,12 @@ const Active = () => {
           <Box sx={{ display:"flex" ,justifyContent:"space-between", alignItems:"center"  }}>
             <NavBar title="Motherboards" subtitle="Activated Motherboards" />
             <Box>
-              <TextField
-                    sx={{
-                      backgroundColor:colors.primary[400],
-                      color: colors.grey[100],
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      margin:"0px 10px"
-                    }}
-                    label="Page"
-                    name="page"
-                    value={Page}
-                    onChange={(e) => {
-                      setPageValue(e.target.value);
-                    }}
-                  />
-                  <Button
-                    sx={{
-                      backgroundColor: colors.blueAccent[700],
-                      color: colors.grey[100],
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      padding: "14px 20px",
-                    }}
-                    variant="contained"
-                    onClick={() => {
-                      applyPage();
-                    }}
-                  >
-                    Select Page
-                  </Button>
+  
             </Box>
           </Box>
           <Box
             sx={{
-              height:"75vh",
+              height:"72vh",
               margin:"40px 0 0 0",
               "& .MuiDataGrid-root": {
                 border: "none",
@@ -182,18 +214,29 @@ const Active = () => {
 
             }}
           >
-            <DataGrid checkboxSelection rows={users} columns={columns}  slots={{ toolbar: GridToolbar }}
+            <DataGrid checkboxSelection rows={radars} columns={columns} 
               slotProps={{
                 toolbar: {
                   showQuickFilter: true,
                 },
-              }}  getRowId={(row) => row.id} pagination
-              initialState={{
-                ...users.initialState,
-                pagination: { paginationModel: { pageSize: 10 } },
               }}
-              pageSizeOptions={[10,20,30]}
-              disableRowSelectionOnClick/>
+              slots={{ toolbar: GridToolbar,pagination: CustomPagination}}
+              pagination
+              disableRowSelectionOnClick
+              initialState={{
+                ...radars.initialState,
+                pagination: { paginationModel: { pageSize:25,page:0}}
+              }}
+              paginationMode="server"
+              rowCount={totalCount}
+              onPaginationModelChange={(newPageSize) => {
+                setQueryParameters({
+                  ...queryParameters,
+                  page:newPageSize.page+1,
+                  limit: newPageSize.pageSize,
+                });
+              }}
+              />
           </Box>
         </Box>
       </Content>
