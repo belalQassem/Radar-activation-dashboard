@@ -3,60 +3,84 @@ import Content from "../../components/ContentPage/Content";
 import { StyledDiv } from "./style";
 import axios from "axios";
 
-import { Box, Button, useTheme, TextField } from "@mui/material";
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { Box, Button, useTheme} from "@mui/material";
+import { DataGrid, GridToolbar, GridPagination  } from '@mui/x-data-grid';
 import { tokens } from "../../utils/theme";
 import NavBar from "../../components/NavBar/NavBar";
 import { toast } from "react-toastify";
-import Radio from "@mui/material/Radio";
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import ModalComponent from "../../components/Modal/Modal";
 import { ActiveMotherboard, AddMotherboard, InActiveMotherboard } from "../../services/Motherbords";
 import MotherboardsActions from '../../components/MotherboardsActions/MotherboardsActions'
 import dayjs from "dayjs";
+import MuiPagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
+import styled from "styled-components";
+import { useCallback } from "react";
+
+const StyledPagination = styled(MuiPagination)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  height: 40px;
+  .MuiPagination-ul {
+    list-style: none;
+    padding-top:20px; 
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .MuiPaginationItem-root {
+    margin: 0 5px;
+    font-size: 16px;
+   
+    color: #000000;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+    &.Mui-selected {
+      background-color: #007bff;
+      color: #ffffff;
+      border: 1px solid #007bff;
+    }
+  }
+`;
+
 const Motherboards = () => {
-  const [users, setUsers] = useState([]);
+  const [radars, setRadars] = useState([]);
   const [isCreate, setIsisCreate] = useState(false);
   const token = localStorage.getItem("token");
   const theme = useTheme();
   const [queryParameters, setQueryParameters] = useState({
-    filter: "",
-    page: "", 
-    limit: 10, 
+    filter: "null",
+    page: 1,
+    limit: 25, 
   });
  
-  const [Page, setPageValue] = useState(queryParameters.page);
-  const [filterValue, setFilterValue] = useState(queryParameters.filter);
+  
+  const [totalPages,setTotalPage] = useState(0);
+  const [totalCount,setTotalCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowId, setRowId] = useState(null);
+  const role = localStorage.getItem("role");
 
   const colors = useMemo(() => tokens(theme.palette.mode), [theme.palette.mode]);
-    useEffect(() => {
-      const motherboardsData = async () => {
-        try {
-          const response = await axios.get(
-            `${process.env.REACT_APP_API_URL}/motherboards/${queryParameters.filter}/${queryParameters.page}?/${queryParameters.limit}?`,
-            {
-              headers: {
-                Authorization: `token ${token}`,
-              },
-            }
-          );
-          if (response.data.data.status === 200) {
-            setUsers(response.data.data.motherboards);
-          
-          } else {
-            toast.error(response.data.data.message);
-          }
-        } catch (error) {
-          toast.error(error.message);
-        }
-      };
-      motherboardsData();
-    }, [queryParameters,token]);
-    
-
+ 
+  
+  const handlePageChange = (event, newPage) => {
+    setQueryParameters({
+      ...queryParameters,
+      page:newPage,
+    });
+  };
+  
+  
     const handleData = async (motherboard) => {
       try {
         const response = await AddMotherboard(motherboard);
@@ -68,19 +92,35 @@ const Motherboards = () => {
         console.error("Error deleting user:", error);
       }
     }
-
+    useEffect(() => {
+      const motherboardsData = async () => {
+        try {
+          const response = await axios.get(
+            `${process.env.REACT_APP_API_URL}/motherboards/${queryParameters.filter}/${queryParameters.page}/${queryParameters.limit}`,
+            {
+              headers: {
+                Authorization: `token ${token}`,
+              },
+            }
+          );
+          if (response.data.data.status === 200) {
+            setRadars(response.data.data.motherboards);
+            setTotalPage(response.data.data.totalPages);
+            setTotalCount(response.data.data.totalCount);
+           
+          } else {
+            toast.error(response.data.data.message);
+          }
+        } catch (error) {
+          toast.error(error.message);
+        }
+      };
+        motherboardsData();
+    }, [queryParameters.filter, queryParameters.page, queryParameters.limit, token]);
   
-  const applyPage = () => {
-    setQueryParameters({
-      ...queryParameters,
-      filter: filterValue !== "" ? filterValue : null,
-      page: Page
-    });
-  };
+  
 
-  const applyFilter = () => {
-    setQueryParameters({ ...queryParameters, filter: filterValue,page:null });
-  };
+ 
  
 
   const handleCloseModal = () => { 
@@ -91,8 +131,32 @@ const Motherboards = () => {
     setIsisCreate(true);
     setIsModalOpen(true);
   };
+  const ActiveRadar = useCallback(async (id) => {
+    try {
+      const response = await ActiveMotherboard(id, token);
+      if (response) {
+        toast.success('Motherboard activated successfully');
+      } else {
+        toast.error('Motherboard activation failed');
+      }
+    } catch (error) {
+      console.error('Error activating motherboard:', error);
+      toast.error(error.message);
+    }
+  }, [token]);
   
- 
+  function CustomPagination() {
+    return <GridPagination ActionsComponent={() => (
+      <Stack spacing={2}>
+        <StyledPagination
+          variant="outlined"
+          count={totalPages}
+          page={queryParameters.page+0}
+          onChange={handlePageChange}
+        />
+      </Stack>
+    )} />;
+  }
   const columns = useMemo(
     () => [
       { field: "id", headerName: "ID",flex: 1, cellClassName: "name-column--cell" },
@@ -128,9 +192,6 @@ const Motherboards = () => {
         field: "status",
         headerName: "Status",
         flex: 1,
-        type: 'singleSelect',
-        valueOptions: ["active", "inactive", "Appending"],
-        editable: true,
         cellClassName: "name-column--cell",
       },
       {
@@ -164,96 +225,60 @@ const Motherboards = () => {
         headerName: "Activation",
         flex: 1,
         cellClassName: "name-column--cell",
-        renderCell: (params) => (
-          <Box>
-              <Button
-              sx={{ backgroundColor: colors.greenAccent[400] , margin:"0 10px" }}
-                onClick={() => ActiveMotherboard(params.id,token)}
-                className="active-button"
-              >
-                Active
-              </Button>
-          
-              <Button
-              sx={{ backgroundColor: colors.redAccent[400] }}
-                onClick={() => InActiveMotherboard(params.id,token)}
-                className="inactive-button"
-              >
-                Inactive
-              </Button>
-          
-          </Box>
-        ),
-      }
+        renderCell: (params) => {
+
+              if (params.row.status === "active") {
+                return (
+                    <Button
+                      sx={{ height:"30px",width:"80px",backgroundColor: colors.redAccent[400] ,padding:"10px" }}
+                      onClick={() => InActiveMotherboard(params.id,token)}
+                      className="inactive-button"
+                      disabled={role === "user" ? true : false}
+                    >
+                      Inactive
+                    </Button>
+                
+                );
+              } 
+                else if (params.row.status === "inactive"){
+                  return (
+                    
+                      <Button
+                      sx={{ height:"30px",width:"80px",backgroundColor: colors.greenAccent[400] ,padding:"10px" }}
+                        onClick={() => ActiveRadar(params.id,token)}
+                        className="active-button"
+                      >
+                        Active
+                      </Button>
+                   
+                  );
+                }
+                else {
+                  return (
+                    <Button
+                    sx={{ height:"30px",width:"80px",backgroundColor: colors.greenAccent[400] ,padding:"10px" }}
+                      onClick={() => ActiveRadar(params.id,token)}
+                      className="active-button"
+                    >
+                      Active
+                    </Button>
+
+                  );
+                }
+            },
+      },
     ],
-    [rowId,token,colors.greenAccent,colors.redAccent]
+    [rowId,token,colors.greenAccent,colors.redAccent,role,ActiveRadar]
   );
 
   
   return (
     <StyledDiv>
       <Content>
-        <Box sx={{ margin:"20px" }}>
+        <Box sx={{ padding:"20px" }}>
           <Box sx={{ display:"flex" ,justifyContent:"space-between", alignItems:"center"  }} >
-            <NavBar title="Motherboards" />
+            <NavBar title="Radars" subtitle="All Radars" />
             <Box sx={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexDirection:"row-reverse" }} >
-              <RadioGroup
-                  sx={{ background: colors.greenAccent[500], borderRadius: "5px", display:"flex", flexDirection:"column",color:"#fff", fontSize: "14px", fontWeight: "bold", padding: "14px 20px" }}
-                  name="filter"
-                  value={filterValue}
-                  onChange={(e) => {
-                    setFilterValue(e.target.value);
-                  }}
-                >
-                  <FormControlLabel
-                    value="active"
-                    control={<Radio />}
-                    label="Active"
-                  />
-                  <FormControlLabel
-                    value="inactive"
-                    control={<Radio />}
-                    label="Inactive"
-                  />
-                  <FormControlLabel
-                    value="Appending"
-                    control={<Radio />}
-                    label="Appending"
-                  />
-                  </RadioGroup>
-                  <Box>
-                  <TextField
-                    sx={{
-                      backgroundColor:colors.primary[400],
-                      color: colors.grey[100],
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      margin:"0px 10px"
-                    }}
-                    label="Page"
-                    name="page"
-                    value={Page}
-                    onChange={(e) => {
-                      setPageValue(e.target.value);
-                    }}
-                  />
-                  </Box>
-                  <Button
-                    sx={{
-                      backgroundColor: colors.blueAccent[700],
-                      color: colors.grey[100],
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      padding: "14px 20px",
-                    }}
-                    variant="contained"
-                    onClick={() => {
-                      applyFilter();
-                      applyPage();
-                    }}
-                  >
-                    Apply Filter
-                  </Button>
                   <Button
                     sx={{
                       backgroundColor: colors.blueAccent[700],
@@ -268,15 +293,14 @@ const Motherboards = () => {
                       handleExpand();
                     }}
                   >
-                    +Add Motherboard
+                    + Add Radar
                   </Button>
             </Box>
 
           </Box>
           <Box
             sx={{
-              height:"75vh",
-              margin:"40px 0 0 0",
+              height:"72vh",
               "& .MuiDataGrid-root": {
                 border: "none",
               },
@@ -313,21 +337,32 @@ const Motherboards = () => {
             }}
           >
             <DataGrid
-              rows={users}
+              rows={radars}
               columns={columns}
               getRowId={(row) => row.id}
-              slots={{ toolbar: GridToolbar }}
+              disableRowSelectionOnClick
+              pagination
               slotProps={{
                 toolbar: {
                   showQuickFilter: true,
                 },
               }}
-              pagination
-              initialState={{
-                ...users.initialState,
-                pagination: { paginationModel: { pageSize: 10 } },
-              }}
-              pageSizeOptions={[10,20,30]}
+              slots={{ toolbar: GridToolbar,pagination: CustomPagination}}
+              {...radars}
+                initialState={{
+                  ...radars.initialState,
+                  pagination: { paginationModel: { pageSize:25,page:0}}
+                }}
+                paginationMode="server"
+                rowCount={totalCount}
+                onPaginationModelChange={(newPageSize) => {
+                  setQueryParameters({
+                    ...queryParameters,
+                    filter:null,
+                    page:newPageSize.page+1,
+                    limit: newPageSize.pageSize,
+                  });
+                }}
               onCellEditStart={params => {setRowId(params.id)}}
             />
           </Box>
