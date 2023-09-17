@@ -31,3 +31,19 @@ export const deleteUser = async (id,token) => {
 export const loginUser = async (email, password, otp) => {
     return await axios.post(`${process.env.REACT_APP_API_URL}/login`,{ email, password,otp });
  };
+ export const resend = async (uid,token) => {
+    return await axios.post(`${process.env.REACT_APP_API_URL}/users/resend_email/`,{uid},{
+      headers: {
+        Authorization:`token ${token}`,
+      },
+      });
+ }
+
+ export const GetNumberOfUser = async (token) => {
+  return await axios.get(`${process.env.REACT_APP_API_URL}/statistics/number_of_users`,{
+      headers: {
+        Authorization:`token ${token}`,
+      },
+  }
+  );
+}
