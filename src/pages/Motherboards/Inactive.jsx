@@ -210,7 +210,7 @@ const Inactive = () => {
               },
             }}
           >
-            <DataGrid checkboxSelection rows={users} columns={columns} 
+            <DataGrid rows={users} columns={columns} 
               getRowId={(row) => row.id} 
               slotProps={{
                 toolbar: {
