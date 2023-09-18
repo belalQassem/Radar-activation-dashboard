@@ -64,12 +64,6 @@ const TwoFactorAuth = () => {
         { abortEarly: false }
       );
 
-      // const data = {
-      //   otp,
-      //   token,
-      //   new_password,
-      // };
-
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/enabledTwoFactor`,
         {otp,
@@ -167,18 +161,6 @@ const TwoFactorAuth = () => {
                 autoComplete="off"
               />
               </Field>
-            {/* <Field>
-              <PasswordIcon />
-              <InputField
-                type="text"
-                id="token"
-                name="token"
-                placeholder="token"
-                onChange={handleChangeInput}
-                value={token}
-                autoComplete="off"
-              />
-            </Field> */}
             <ButtonGroup>
               <ButtonGrey type="button">Close</ButtonGrey>
               <ButtonBlue type="submit">

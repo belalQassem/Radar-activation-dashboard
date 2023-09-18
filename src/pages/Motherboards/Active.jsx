@@ -214,7 +214,7 @@ const Active = () => {
 
             }}
           >
-            <DataGrid checkboxSelection rows={radars} columns={columns} 
+            <DataGrid rows={radars} columns={columns} 
               slotProps={{
                 toolbar: {
                   showQuickFilter: true,

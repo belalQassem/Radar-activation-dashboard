@@ -19,6 +19,7 @@ const ProtectedRoute = ({ isAuthorized, children }) =>  {
 }
 
 const Router = ({ isAuthorized }) => {
+  const role = localStorage.getItem("role");
   return (
     <Routes>
       <Route index element={<RedirectToLogin/>} />
@@ -31,8 +32,8 @@ const Router = ({ isAuthorized }) => {
       <Route path="Motherboards" element={isAuthorized ? <LazyMotherboards />:<RedirectToLogin /> } />
       <Route path="Motherboards/Active" element={isAuthorized ? <LazyActiveMotherboards />:<RedirectToLogin />} />
       <Route path="Motherboards/InActive" element={isAuthorized ? <LazypendingdKeys />: <RedirectToLogin /> } />
-      <Route path="data/usermangment" element={isAuthorized ? <LazyMangeTeam /> :<RedirectToLogin /> } />
-      <Route path="data/create" element={isAuthorized ? <LazyCreateUser />:<RedirectToLogin />} />
+      <Route path="data/usermangment" element={isAuthorized &&role==="admin" ? <LazyMangeTeam /> :<RedirectToLogin /> } />
+      <Route path="data/create" element={isAuthorized &&role==="admin" ? <LazyCreateUser />:<RedirectToLogin />} />
       </Route>
     </Routes>
   );

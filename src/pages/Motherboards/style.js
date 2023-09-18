@@ -1,72 +1,42 @@
 import styled from 'styled-components';
-
+import MuiPagination from '@mui/material/Pagination';
 export const StyledDiv = styled.div`
     width: 100%;
     height: 100%;
 `;
-export const StyledForm = styled.form`
+export const StyledPagination = styled(MuiPagination)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 400px;
+  height: 40px;
+  .MuiPagination-ul {
+    list-style: none;
+    padding-top:20px; 
+    margin-bottom: 20px;
     display: flex;
-    flex-direction:column-reverse;
     justify-content: space-between;
     align-items: center;
-    width: 70%;
-    height: 100%;
-    margin: 0px 20px;
-    padding: 0px 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
- & .form-control {
-    width: 100%;
-    height: 100%;
-    border: none;
-    outline: none;
+  }
+  .MuiPaginationItem-root {
+    margin: 0 5px;
     font-size: 16px;
-    font-weight: 500;
-    color: #000;
-    background-color: transparent;
-    }
-    & .form-control:focus {
-        border: none;
-        outline: none;
-    }
-    & label {
-        font-size: 16px;
-        font-weight: 500;
-        color: #000;
-    }
-    `;
-export const StyledButton = styled.button`
-width: 22.5rem;
-color: white;
-background: #3c8224;
-margin: 20px 0;
-padding: 1rem;
-border: none;
-border-radius: 25px;
-cursor: pointer;
-font-size: 16px;
-&[disabled] {
-  background-color: grey;
-  cursor: not-allowed;
-}
+   
+    color: #000000;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
 
-&:focus {
-  outline: none;
-}
-&:hover {
-  
-  box-shadow: 0 0 5px #000;
-}
-&:active {
-  background-color: #fff;
-  color: #000;
-  
-}
-
-@media (min-width: 300px) and (max-width: 1200px) {
-  width: 17.5rem;
-}
+    &:hover {
+      background-color: #f0f0f0;
+    }
+    &.Mui-selected {
+      background-color: #007bff;
+      color: #ffffff;
+      border: 1px solid #007bff;
+    }
+  }
 `;
 
 
