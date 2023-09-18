@@ -73,8 +73,6 @@ const Login = () => {
         { email, password,otp }
       );
       
-      console.log(userData.data);
-
       if (userData.data.data.status === 200) {
         localStorage.setItem("token", userData.data.data.token);
         setToken(userData.data.data.token);
