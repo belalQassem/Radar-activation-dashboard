@@ -12,45 +12,11 @@ import ModalComponent from "../../components/Modal/Modal";
 import { ActiveMotherboard, AddMotherboard, InActiveMotherboard } from "../../services/Motherbords";
 import MotherboardsActions from '../../components/MotherboardsActions/MotherboardsActions'
 import dayjs from "dayjs";
-import MuiPagination from '@mui/material/Pagination';
+import {StyledPagination} from './style'
 import Stack from '@mui/material/Stack';
-import styled from "styled-components";
 import { useCallback } from "react";
 
-const StyledPagination = styled(MuiPagination)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 400px;
-  height: 40px;
-  .MuiPagination-ul {
-    list-style: none;
-    padding-top:20px; 
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .MuiPaginationItem-root {
-    margin: 0 5px;
-    font-size: 16px;
-   
-    color: #000000;
-    border: 1px solid #dddddd;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
 
-    &:hover {
-      background-color: #f0f0f0;
-    }
-    &.Mui-selected {
-      background-color: #007bff;
-      color: #ffffff;
-      border: 1px solid #007bff;
-    }
-  }
-`;
 
 const Motherboards = () => {
   const [radars, setRadars] = useState([]);
@@ -92,8 +58,8 @@ const Motherboards = () => {
         console.error("Error deleting user:", error);
       }
     }
-    useEffect(() => {
-      const motherboardsData = async () => {
+    
+      const motherboardsData = useCallback(async () => {
         try {
           const response = await axios.get(
             `${process.env.REACT_APP_API_URL}/motherboards/${queryParameters.filter}/${queryParameters.page}/${queryParameters.limit}`,
@@ -114,9 +80,10 @@ const Motherboards = () => {
         } catch (error) {
           toast.error(error.message);
         }
-      };
+      }, [queryParameters.filter,queryParameters.page,queryParameters.limit,token]);
+      useEffect(() => {
         motherboardsData();
-    }, [queryParameters.filter, queryParameters.page, queryParameters.limit, token]);
+      }, [queryParameters.filter,queryParameters.page,queryParameters.limit,motherboardsData]);
   
   
 
@@ -143,8 +110,22 @@ const Motherboards = () => {
       console.error('Error activating motherboard:', error);
       toast.error(error.message);
     }
-  }, [token]);
-  
+    motherboardsData();
+  }, [token,motherboardsData]);
+  const InactiveRadar = useCallback(async (id) => {
+    try {
+      const response = await InActiveMotherboard(id, token);
+      if (response) {
+        toast.success('Motherboard inactivated successfully');
+      } else {
+        toast.error('Motherboard inactivation failed');
+      }
+    } catch (error) {
+      console.error('Error inactivating motherboard:', error);
+      toast.error(error.message);
+    }
+    motherboardsData();
+  }, [token,motherboardsData]);
   function CustomPagination() {
     return <GridPagination ActionsComponent={() => (
       <Stack spacing={2}>
@@ -231,7 +212,7 @@ const Motherboards = () => {
                 return (
                     <Button
                       sx={{ height:"30px",width:"80px",backgroundColor: colors.redAccent[400] ,padding:"10px" }}
-                      onClick={() => InActiveMotherboard(params.id,token)}
+                      onClick={() => InactiveRadar(params.id,token)}
                       className="inactive-button"
                       disabled={role === "user" ? true : false}
                     >
@@ -268,7 +249,7 @@ const Motherboards = () => {
             },
       },
     ],
-    [rowId,token,colors.greenAccent,colors.redAccent,role,ActiveRadar]
+    [rowId,token,colors.greenAccent,colors.redAccent,role,ActiveRadar,InactiveRadar]
   );
 
   
@@ -331,7 +312,8 @@ const Motherboards = () => {
                 backgroundColor: colors.blueAccent[700],
               },
               "& .MuiDataGrid-toolbarContainer .MuiToolbar-root":{
-                backgroundColor: colors.blueAccent[300],
+                backgroundColor: colors.blueAccent[500],
+
               },
 
             }}
@@ -363,7 +345,7 @@ const Motherboards = () => {
                     limit: newPageSize.pageSize,
                   });
                 }}
-              onCellEditStart={params => {setRowId(params.id)}}
+              onCellEditStop={params => {setRowId(params.id)}}
             />
           </Box>
           {isModalOpen && (
