@@ -234,9 +234,9 @@ const updateSchema = yup.object().shape({
 });
 
 const createSchema = yup.object().shape({
-  system_key: yup.number().required("System Key is required"),
-  operator_id: yup.number().required("Operator ID is required"),
-  location_id: yup.number().required("Location ID is required"),
+  system_key: yup.string().required("System Key is required"),
+  operator_id: yup.string().required("Operator ID is required"),
+  location_id: yup.string().required("Location ID is required"),
   street_name: yup.string().required("Street Name is required"),
 });
 
@@ -384,7 +384,7 @@ const CreateMotherboardForm = ({ initialValues, schema, onSubmit, onClose }) => 
           onChange={handleChange}
           value={values.street_name}
           name="street_name"
-          error={touched.street_name}
+          error={touched.street_name && errors.street_name}
           helperText={touched.street_name && errors.street_name}
         />
 
