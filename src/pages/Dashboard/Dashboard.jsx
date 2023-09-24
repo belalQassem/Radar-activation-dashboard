@@ -24,7 +24,7 @@ const Dashboard = () => {
     const [numberOfradarActivated, setNumberOfradarActivated] = useState(0);
     const [rate, setRate] = useState(0);
     const [recentRadar ,setRecentRadar] = useState([]);
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     useEffect(() => {
