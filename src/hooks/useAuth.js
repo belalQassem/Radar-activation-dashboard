@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { Logout } from "../services/Auth";
 
 
 const useAuth = (url) => {
  
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
 
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthorized, setisAuthorized] = useState(token ? true : false);
@@ -13,14 +15,26 @@ const useAuth = (url) => {
   const [password, setpassword] = useState("");
   const [qrCode , setQrCode] = useState(null);
   
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("name");
+  const logout = async () => {
+  const res = await Logout(token);
+  console.log(res.data.data.status);
+  if (res.data.data.status === 200) {
+    console.log(res);
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("name");
+    sessionStorage.removeItem("role");
     setToken("");
     setisAuthorized(false);
-    
+    toast.success("You are now logged out.");
+  } else {
+    toast.error(res.data.message);
+  }
   };
-  // 
+
+
+
+
+ 
 
   return {
     isAuthorized,

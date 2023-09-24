@@ -8,7 +8,7 @@ const MotherboardsActions = ({ params,rowId,setRowId }) => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   
   const motherboard = {
     location_id: params.row.location_id,

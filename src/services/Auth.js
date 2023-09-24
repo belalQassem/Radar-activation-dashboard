@@ -22,4 +22,11 @@ const loginUser = async (email, password, otp) => {
 
 export default loginUser;
 
-
+export const Logout = async (token) => {
+  return await axios.get(`${process.env.REACT_APP_API_URL}/logout`,{
+      headers: {
+          Authorization:`token ${token}`,
+      },
+  }
+  );
+  }

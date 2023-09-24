@@ -38,7 +38,7 @@ const TwoFactorAuth = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token") ;
+  const token = sessionStorage.getItem("token") ;
   const handlePasswordShow = () => {
     setPasswordType(passwordType === "password" ? "text" : "password");
     setPasswordShow(!passwordShow);
@@ -75,8 +75,8 @@ const TwoFactorAuth = () => {
       );
 
       if (response.data.data.status === 200) {
-        localStorage.setItem("name", response.data.data.username);
-        localStorage.setItem("role", response.data.data.role);
+        sessionStorage.setItem("name", response.data.data.username);
+        sessionStorage.setItem("role", response.data.data.role);
         setErrors({});
         setisAuthorized(true);
         setIsLoading(false);

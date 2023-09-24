@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import LazyLogin from "../pages/Login/Login";
 import LazyTOwFactorAuthintication from "../components/TwoFactorAuth/TwoFactorAuth";
-import LazyDashboard from "../components/LayOut/LayOut";
+import LazyLayOut from "../components/LayOut/LayOut";
 import LazyMotherboards from "../pages/Motherboards/Motherboards";
 import LazyActiveMotherboards from "../pages/Motherboards/Active";
 import LazypendingdKeys from "../pages/Motherboards/Inactive";
@@ -19,7 +19,7 @@ const ProtectedRoute = ({ isAuthorized, children }) =>  {
 }
 
 const Router = ({ isAuthorized }) => {
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
   return (
     <Routes>
       <Route index element={<RedirectToLogin/>} />
@@ -27,8 +27,8 @@ const Router = ({ isAuthorized }) => {
       <Route path="/TwoFactorAuth" element={isAuthorized ? <Navigate to="/dashboard" />: <LazyTOwFactorAuthintication/>}/>
       <Route
         path="/dashboard"
-        element={<ProtectedRoute isAuthorized={isAuthorized}><LazyDashboard/></ProtectedRoute>}>
-      <Route path="/dashboard/statistics" element={isAuthorized ? <LazyStatistics/>:<RedirectToLogin />} />
+        element={<ProtectedRoute isAuthorized={isAuthorized}><LazyLayOut/></ProtectedRoute>}>
+      <Route path="Statistics" element={isAuthorized ? <LazyStatistics/>:<RedirectToLogin />} />
       <Route path="Motherboards" element={isAuthorized ? <LazyMotherboards />:<RedirectToLogin /> } />
       <Route path="Motherboards/Active" element={isAuthorized ? <LazyActiveMotherboards />:<RedirectToLogin />} />
       <Route path="Motherboards/InActive" element={isAuthorized ? <LazypendingdKeys />: <RedirectToLogin /> } />

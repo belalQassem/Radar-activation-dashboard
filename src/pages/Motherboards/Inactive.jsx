@@ -63,7 +63,7 @@ const Inactive = () => {
   });
   const [totalPages,setTotalPage] = useState(0);
   const [totalCount,setTotalCount] = useState(0);
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const handlePageChange = (event, newPage) => {

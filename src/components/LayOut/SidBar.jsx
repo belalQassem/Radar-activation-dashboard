@@ -22,8 +22,8 @@ import useAuth from "../../hooks/useAuth";
 
 const Sidebar = () => {
   const { setisAuthorized } = useAuthContext();
-  const name = localStorage.getItem("name");
-  const role = localStorage.getItem("role")
+  const name = sessionStorage.getItem("name");
+  const role = sessionStorage.getItem("role")
   const { logout } = useAuth();
 
   
@@ -104,10 +104,11 @@ const Sidebar = () => {
                 color: "#868dfb",
                 background: "transparent",
               },
+              
             }),
           }}
         >
-          <Item to="/dashboard/statistics" icon={HomeOutlinedIcon} title="dashboard" />
+          <Item to="/dashboard/Statistics" icon={HomeOutlinedIcon} title="dashboard" />
           <Typography variant="h6" color={colors.grey[300]} sx={{ margin: "15px 0 5px 20px" }}>Radars</Typography>
           {/* <Item to="/dashboard" icon={DashboardIcon} title="Dashboardd" /> */}
           <Item to="/dashboard/Motherboards/" icon={KeyIcon} title="All" />

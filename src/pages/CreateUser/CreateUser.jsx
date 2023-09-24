@@ -13,12 +13,10 @@ import { StyledDiv } from "./style";
 
 // Validation schema using yup
 const checkoutSchema = yup.object().shape({
-  _username: yup.string().required("Username is required"),
-  _fullname: yup.string().required("Fullname is required"),
-  _email:yup.string()
-  .required('email is required')
-  .min(3, 'email must be at least 3 characters long'),
-  _role: yup.string().required("Role is required"),
+  _username: yup.string().required("Username is required").min(3, 'Username must be at least 3 characters long').max(15, 'Username must be at most 15 characters long'),
+  _fullname: yup.string().required("Fullname is required").min(3, 'Fullname must be at least 3 characters long').max(15, 'Fullname must be at most 15 characters long'),
+  _email:yup.string().email('email must be a valid email').required('email is required').min(6, 'email must be at least 3 characters long'),
+  _role: yup.string().required("Role is required").min(3, 'Role must be at least 3 characters long').max(15, 'Role must be at most 15 characters long')
 });
 
 // Initial form values
@@ -72,7 +70,7 @@ function UserForm({handleSubmit }) {
 
 // CreateUser component
 function CreateUser() {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   const navigate = useNavigate();
 
 
