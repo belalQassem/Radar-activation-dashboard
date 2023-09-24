@@ -19,7 +19,7 @@ const ManageTeam = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
