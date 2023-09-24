@@ -21,7 +21,7 @@ import { useCallback } from "react";
 const Motherboards = () => {
   const [radars, setRadars] = useState([]);
   const [isCreate, setIsisCreate] = useState(false);
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   const theme = useTheme();
   const [queryParameters, setQueryParameters] = useState({
     filter: "null",
@@ -34,7 +34,7 @@ const Motherboards = () => {
   const [totalCount,setTotalCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowId, setRowId] = useState(null);
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
 
   const colors = useMemo(() => tokens(theme.palette.mode), [theme.palette.mode]);
  
