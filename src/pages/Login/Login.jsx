@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../../context/AuthContext";
-import * as Yup from "yup";
+import * as yup from "yup";
 import axios from "axios";
 import {
   StyledDiv,
@@ -14,15 +14,12 @@ import { toast } from "react-toastify";
 
 
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string()
-    .required('email is required')
-    .min(3, 'email must be at least 3 characters long'),
-  password: Yup.string()
-    .required('Password is required')
-    .min(6, 'Password must be at least 6 characters long'),
-  otp: Yup.string()
+const validationSchema = yup.object().shape({
+  email:  yup.string().email('Email must be a valid email').required('Email is required').min(3, 'Email must be at least 3 characters long'),
+  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters long').max(15, 'Password must be at most 15 characters long'),
+  otp: yup.string()
 });
+
 
 const Login = () => {
   const { setToken, setisAuthorized, isLoading, setIsLoading,setQrCode } = useAuthContext();
@@ -46,10 +43,14 @@ const Login = () => {
   }, []);
   
   const handleChangeInput = (e) => {
-    const { value, id } = e.target;
-    if (id === "email") setEmail(value);
-    if (id === "password") setPassword(value);
-    if (id === "otp") setOtp(value);
+    const { id, value } = e.target;
+    if (id === "email") {
+      setEmail(value);
+    } else if (id === "password") {
+      setPassword(value);
+    } else if (id === "otp") {
+      setOtp(value);
+    }
   };
 
 
@@ -74,15 +75,15 @@ const Login = () => {
       );
       
       if (userData.data.data.status === 200) {
-        localStorage.setItem("token", userData.data.data.token);
+        sessionStorage.setItem("token", userData.data.data.token);
         setToken(userData.data.data.token);
-        localStorage.setItem("name", userData.data.data.username);
-        localStorage.setItem("role", userData.data.data.role);
+        sessionStorage.setItem("name", userData.data.data.username);
+        sessionStorage.setItem("role", userData.data.data.role);
         setErrors([]);
         setIsLoading(false);
         setisAuthorized(true);
         toast.success("Login Successfully");
-        navigate('/dashboard')
+        navigate('/dashboard/Statistics')
       }
       else {
         setErrors({ login: "email or password is incorrect." });
@@ -94,8 +95,8 @@ const Login = () => {
         setQrCode(error.response.data.data.qrCodeDataURL);
         setToken(error.response.data.data.token);
         setIsLoading(false);
-        localStorage.setItem("token",error.response.data.data.token);
-        localStorage.setItem("qrCode",error.response.data.data.qrCodeDataURL);
+        sessionStorage.setItem("token",error.response.data.data.token);
+        sessionStorage.setItem("qrCode",error.response.data.data.qrCodeDataURL);
         toast.error("Please scan QR code");
         navigate('/TwoFactorAuth')
       }
