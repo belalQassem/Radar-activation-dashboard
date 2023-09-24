@@ -17,9 +17,7 @@ const useAuth = (url) => {
   
   const logout = async () => {
   const res = await Logout(token);
-  console.log(res.data.data.status);
   if (res.data.data.status === 200) {
-    console.log(res);
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("name");
     sessionStorage.removeItem("role");
